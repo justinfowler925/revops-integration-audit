@@ -1,0 +1,174 @@
+{
+  "account": {
+    "name": "Northbridge Mutual",
+    "industry": "P&C Insurance",
+    "segment": "Mid-market",
+    "arrOpportunity": "$420K",
+    "stage": "Technical Evaluation"
+  },
+  "functions": [
+    { "id": "executive", "label": "Executive", "critical": true },
+    { "id": "underwriting", "label": "Underwriting", "critical": true },
+    { "id": "claims", "label": "Claims", "critical": false },
+    { "id": "it-security", "label": "IT / Security", "critical": true },
+    { "id": "procurement", "label": "Procurement", "critical": true },
+    { "id": "finance", "label": "Finance", "critical": false },
+    { "id": "legal", "label": "Legal / Compliance", "critical": false }
+  ],
+  "authorities": [
+    {
+      "id": "decide",
+      "label": "Decide",
+      "blurb": "Final yes / no. Can commit budget or kill the deal."
+    },
+    {
+      "id": "shape",
+      "label": "Shape",
+      "blurb": "Sets criteria and owns the evaluation path."
+    },
+    {
+      "id": "evaluate",
+      "label": "Evaluate",
+      "blurb": "Runs diligence, pilots, and technical review."
+    },
+    {
+      "id": "inform",
+      "label": "Inform",
+      "blurb": "Needs updates; low direct decision weight."
+    }
+  ],
+  "contacts": [
+    {
+      "id": "c1",
+      "name": "Elena Vasquez",
+      "title": "Chief Underwriting Officer",
+      "function": "underwriting",
+      "authority": "decide",
+      "power": "high",
+      "preference": "champion",
+      "relationship": "strong",
+      "access": "direct"
+    },
+    {
+      "id": "c2",
+      "name": "Marcus Chen",
+      "title": "VP, Claims Operations",
+      "function": "claims",
+      "authority": "shape",
+      "power": "medium",
+      "preference": "neutral",
+      "relationship": "warm",
+      "access": "direct"
+    },
+    {
+      "id": "c3",
+      "name": "Priya Nair",
+      "title": "Director, Information Security",
+      "function": "it-security",
+      "authority": "shape",
+      "power": "high",
+      "preference": "skeptical",
+      "relationship": "thin",
+      "access": "indirect"
+    },
+    {
+      "id": "c4",
+      "name": "Jonah Blake",
+      "title": "Security Architect",
+      "function": "it-security",
+      "authority": "evaluate",
+      "power": "medium",
+      "preference": "champion",
+      "relationship": "strong",
+      "access": "direct"
+    },
+    {
+      "id": "c5",
+      "name": "Alicia Romero",
+      "title": "Procurement Manager",
+      "function": "procurement",
+      "authority": "evaluate",
+      "power": "medium",
+      "preference": "neutral",
+      "relationship": "warm",
+      "access": "direct"
+    },
+    {
+      "id": "c6",
+      "name": "Sam Okonkwo",
+      "title": "Controller",
+      "function": "finance",
+      "authority": "inform",
+      "power": "low",
+      "preference": "neutral",
+      "relationship": "unknown",
+      "access": "none"
+    },
+    {
+      "id": "c7",
+      "name": "Hannah Price",
+      "title": "Associate General Counsel",
+      "function": "legal",
+      "authority": "evaluate",
+      "power": "medium",
+      "preference": "skeptical",
+      "relationship": "thin",
+      "access": "indirect"
+    },
+    {
+      "id": "c8",
+      "name": "David Kim",
+      "title": "SVP, Underwriting Strategy",
+      "function": "underwriting",
+      "authority": "shape",
+      "power": "high",
+      "preference": "champion",
+      "relationship": "strong",
+      "access": "direct"
+    },
+    {
+      "id": "c9",
+      "name": "Rita Alvarez",
+      "title": "Claims Analyst Lead",
+      "function": "claims",
+      "authority": "evaluate",
+      "power": "low",
+      "preference": "champion",
+      "relationship": "warm",
+      "access": "direct"
+    },
+    {
+      "id": "c10",
+      "name": "Owen Hart",
+      "title": "CEO",
+      "function": "executive",
+      "authority": "decide",
+      "power": "high",
+      "preference": "neutral",
+      "relationship": "thin",
+      "access": "none"
+    },
+    {
+      "id": "c11",
+      "name": "Maya Singh",
+      "title": "IT Project Manager",
+      "function": "it-security",
+      "authority": "inform",
+      "power": "low",
+      "preference": "champion",
+      "relationship": "warm",
+      "access": "direct"
+    },
+    {
+      "id": "c12",
+      "name": "Chris Foley",
+      "title": "VP, Finance",
+      "function": "finance",
+      "authority": "shape",
+      "power": "high",
+      "preference": "neutral",
+      "relationship": "unknown",
+      "access": "indirect"
+    }
+  ]
+}

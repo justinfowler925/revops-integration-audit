@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Function × Authority — Org Chart Kanban</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #142018;
+      --ink-soft: #2a3a30;
+      --moss: #1f6b4a;
+      --moss-deep: #134632;
+      --leaf: #3d9b6e;
+      --sand: #f3efe4;
+      --paper: #faf7f0;
+      --card: #fffdf8;
+      --line: rgba(20, 32, 24, 0.12);
+      --line-strong: rgba(20, 32, 24, 0.22);
+      --ember: #c45c26;
+      --amber: #d9a441;
+      --slate: #5c6b62;
+      --danger: #b33a2b;
+      --shadow: 0 10px 30px rgba(20, 32, 24, 0.08);
+      --lane-decide: #e8f3ec;
+      --lane-shape: #eef4e8;
+      --lane-evaluate: #f4f1e8;
+      --lane-inform: #f2efe9;
+      --radius: 14px;
+      --font-ui: "Sora", sans-serif;
+      --font-display: "Fraunces", Georgia, serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: var(--font-ui);
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(61, 155, 110, 0.18), transparent 55%),
+        radial-gradient(900px 500px at 90% 0%, rgba(196, 92, 38, 0.12), transparent 50%),
+        linear-gradient(180deg, #e7efe8 0%, var(--sand) 40%, #ebe4d6 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+
+    header.app-header {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 22px;
+      animation: rise 0.55s ease;
+    }
+
+    .brand-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: grid;
+      gap: 6px;
+    }
+
+    .brand-mark {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      color: var(--moss-deep);
+    }
+
+    .brand-mark span {
+      color: var(--ember);
+    }
+
+    .brand p {
+      margin: 0;
+      max-width: 46ch;
+      color: var(--ink-soft);
+      font-size: 0.95rem;
+      line-height: 1.45;
+    }
+
+    .account-chip {
+      background: rgba(255, 253, 248, 0.8);
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      padding: 10px 16px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+    }
+
+    .account-chip strong {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+
+    .account-chip .meta {
+      color: var(--slate);
+      font-size: 0.8rem;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .view-switch {
+      display: inline-flex;
+      background: rgba(255, 253, 248, 0.75);
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      padding: 4px;
+      gap: 2px;
+    }
+
+    .view-switch button {
+      border: 0;
+      background: transparent;
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--slate);
+      padding: 8px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+    }
+
+    .view-switch button[aria-pressed="true"] {
+      background: var(--moss);
+      color: #f7fff9;
+      transform: translateY(-1px);
+    }
+
+    .view-switch button:not([aria-pressed="true"]):hover {
+      color: var(--ink);
+      background: rgba(20, 32, 24, 0.05);
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .filters select,
+    .filters button.ghost {
+      appearance: none;
+      border: 1px solid var(--line-strong);
+      background: rgba(255, 253, 248, 0.85);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 0.82rem;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .filters button.ghost:hover { background: #fff; }
+
+    .gap-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 18px;
+      min-height: 34px;
+      animation: rise 0.55s ease;
+    }
+
+    .gap-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(179, 58, 43, 0.1);
+      color: var(--danger);
+      border: 1px solid rgba(179, 58, 43, 0.25);
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .gap-chip::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--danger);
+      box-shadow: 0 0 0 3px rgba(179, 58, 43, 0.15);
+    }
+
+    .ok-chip {
+      background: rgba(31, 107, 74, 0.1);
+      color: var(--moss-deep);
+      border-color: rgba(31, 107, 74, 0.25);
+    }
+
+    .ok-chip::before { background: var(--moss); box-shadow: 0 0 0 3px rgba(31, 107, 74, 0.15); }
+
+    .board-wrap {
+      overflow: auto;
+      border: 1px solid var(--line-strong);
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(255,253,248,0.92), rgba(250,247,240,0.96)),
+        repeating-linear-gradient(
+          -12deg,
+          transparent,
+          transparent 18px,
+          rgba(31, 107, 74, 0.025) 18px,
+          rgba(31, 107, 74, 0.025) 19px
+        );
+      box-shadow: var(--shadow);
+      animation: rise 0.55s ease;
+    }
+
+    .board {
+      --lane-label: 148px;
+      min-width: 1100px;
+      display: grid;
+      grid-template-columns: var(--lane-label) repeat(var(--cols), minmax(160px, 1fr));
+    }
+
+    .corner,
+    .col-head,
+    .lane-label,
+    .cell {
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .corner {
+      position: sticky;
+      left: 0;
+      z-index: 3;
+      background: #f4f0e6;
+      padding: 16px 12px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--slate);
+    }
+
+    .col-head {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: rgba(244, 240, 230, 0.96);
+      backdrop-filter: blur(6px);
+      padding: 14px 12px;
+      text-align: center;
+    }
+
+    .col-head h3 {
+      margin: 0;
+      font-size: 0.92rem;
+      font-weight: 700;
+    }
+
+    .col-head .count {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.72rem;
+      color: var(--slate);
+      font-weight: 500;
+    }
+
+    .col-head.critical h3::after {
+      content: " · critical";
+      color: var(--ember);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .lane-label {
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      padding: 14px 12px;
+      background: #f0ebe0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 4px;
+    }
+
+    .lane-label strong {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .lane-label span {
+      font-size: 0.72rem;
+      color: var(--slate);
+      line-height: 1.35;
+    }
+
+    .cell {
+      min-height: 148px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: background 0.2s ease, outline-color 0.2s ease;
+      outline: 2px solid transparent;
+      outline-offset: -2px;
+    }
+
+    .cell[data-authority="decide"] { background: var(--lane-decide); }
+    .cell[data-authority="shape"] { background: var(--lane-shape); }
+    .cell[data-authority="evaluate"] { background: var(--lane-evaluate); }
+    .cell[data-authority="inform"] { background: var(--lane-inform); }
+
+    .cell.drag-over {
+      outline-color: var(--moss);
+      background: #dff0e6 !important;
+    }
+
+    .cell.gap {
+      background-image:
+        linear-gradient(135deg, rgba(179, 58, 43, 0.06) 25%, transparent 25%, transparent 50%, rgba(179, 58, 43, 0.06) 50%, rgba(179, 58, 43, 0.06) 75%, transparent 75%, transparent);
+      background-size: 12px 12px;
+    }
+
+    .empty-hint {
+      margin: auto;
+      text-align: center;
+      color: rgba(20, 32, 24, 0.38);
+      font-size: 0.74rem;
+      font-weight: 500;
+      padding: 8px;
+      pointer-events: none;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      padding: 10px 11px 9px;
+      box-shadow: 0 4px 14px rgba(20, 32, 24, 0.06);
+      cursor: grab;
+      user-select: none;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      animation: card-in 0.45s ease both;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 22px rgba(20, 32, 24, 0.12);
+      border-color: rgba(31, 107, 74, 0.35);
+    }
+
+    .card:active { cursor: grabbing; }
+    .card.dragging {
+      opacity: 0.45;
+      transform: scale(0.98);
+    }
+
+    .card h4 {
+      margin: 0 0 2px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .card .title {
+      margin: 0 0 8px;
+      font-size: 0.72rem;
+      color: var(--slate);
+      line-height: 1.3;
+    }
+
+    .signals {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+    }
+
+    .signal {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--ink-soft);
+      text-transform: capitalize;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+    }
+
+    .dot.high, .dot.champion, .dot.strong, .dot.direct { background: var(--moss); }
+    .dot.medium, .dot.neutral, .dot.warm, .dot.indirect { background: var(--amber); }
+    .dot.low, .dot.skeptical, .dot.thin { background: var(--ember); }
+    .dot.unknown, .dot.none { background: #9aa49d; }
+
+    .legend {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 24px;
+      color: var(--ink-soft);
+      font-size: 0.78rem;
+      animation: rise 0.55s ease;
+    }
+
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      border: 1px solid var(--line-strong);
+    }
+
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 32, 24, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 20;
+    }
+
+    .drawer-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(380px, 92vw);
+      height: 100%;
+      background: var(--paper);
+      border-left: 1px solid var(--line-strong);
+      box-shadow: -20px 0 50px rgba(20, 32, 24, 0.18);
+      transform: translateX(104%);
+      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+      z-index: 21;
+      padding: 28px 24px;
+      display: grid;
+      align-content: start;
+      gap: 14px;
+    }
+
+    .drawer.open { transform: translateX(0); }
+    .drawer h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 1.7rem;
+      line-height: 1.1;
+    }
+    .drawer .role { margin: 0; color: var(--slate); }
+    .drawer dl {
+      margin: 8px 0 0;
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 8px 10px;
+      font-size: 0.88rem;
+    }
+    .drawer dt { color: var(--slate); font-weight: 500; }
+    .drawer dd { margin: 0; font-weight: 600; text-transform: capitalize; }
+    .drawer button.close {
+      justify-self: start;
+      border: 1px solid var(--line-strong);
+      background: #fff;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font: inherit;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+
+    .note {
+      margin-top: 22px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      border: 1px solid var(--line-strong);
+      background: rgba(255, 253, 248, 0.7);
+      font-size: 0.86rem;
+      line-height: 1.5;
+      color: var(--ink-soft);
+      animation: rise 0.55s ease;
+    }
+
+    .note strong { color: var(--ink); }
+
+    @keyframes rise {
+      from { transform: translateY(10px); }
+      to { transform: translateY(0); }
+    }
+
+    @keyframes card-in {
+      from { transform: translateY(6px) scale(0.985); }
+      to { transform: translateY(0) scale(1); }
+    }
+
+    @media (max-width: 720px) {
+      .shell { padding: 18px 12px 36px; }
+      .brand-mark { font-size: 2rem; }
+      .account-chip { width: 100%; justify-content: space-between; }
+      .lane-label span { display: none; }
+      .board { --lane-label: 88px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="app-header">
+      <div class="brand-row">
+        <div class="brand">
+          <div class="brand-mark">Function <span>×</span> Authority</div>
+          <p>Kanban columns for buying function. Swim lanes for decision capacity. Spot who can move the deal — and which seats are empty.</p>
+        </div>
+        <div class="account-chip" id="accountChip">
+          <div>
+            <strong id="accountName">—</strong>
+            <div class="meta" id="accountMeta"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="view-switch" role="group" aria-label="Org chart view">
+          <button type="button" disabled title="Existing view">Hierarchy</button>
+          <button type="button" disabled title="Existing view">Title bands</button>
+          <button type="button" aria-pressed="true">Function × Authority</button>
+        </div>
+        <div class="filters">
+          <label>
+            <select id="powerFilter" aria-label="Filter by power">
+              <option value="all">All power</option>
+              <option value="high">High power</option>
+              <option value="medium">Medium power</option>
+              <option value="low">Low power</option>
+            </select>
+          </label>
+          <label>
+            <select id="prefFilter" aria-label="Filter by preference">
+              <option value="all">All preference</option>
+              <option value="champion">Champion</option>
+              <option value="neutral">Neutral</option>
+              <option value="skeptical">Skeptical</option>
+            </select>
+          </label>
+          <button type="button" class="ghost" id="resetBtn">Reset board</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="gap-strip" id="gapStrip" aria-live="polite"></div>
+
+    <div class="board-wrap">
+      <div class="board" id="board" style="--cols: 7"></div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><span class="swatch" style="background: var(--lane-decide)"></span> Decide lane</div>
+      <div class="legend-item"><span class="swatch" style="background: var(--lane-shape)"></span> Shape lane</div>
+      <div class="legend-item"><span class="swatch" style="background: var(--lane-evaluate)"></span> Evaluate lane</div>
+      <div class="legend-item"><span class="swatch" style="background: var(--lane-inform)"></span> Inform lane</div>
+      <div class="legend-item"><span class="dot high" style="width:9px;height:9px"></span> Strong / high / champion / direct</div>
+      <div class="legend-item"><span class="dot medium" style="width:9px;height:9px"></span> Medium / warm / neutral / indirect</div>
+      <div class="legend-item"><span class="dot low" style="width:9px;height:9px"></span> Low / thin / skeptical</div>
+    </div>
+
+    <div class="note">
+      <strong>How to use:</strong> Drag cards between columns to re-tag function, or between lanes to re-tag authority.
+      Hatched cells in Decide/Shape on critical functions are coverage gaps — the same signal C-suite gap detection should surface in the CRM tab.
+      Card chips reuse the live Power / Preference / Relationship / Access indicators.
+    </div>
+  </div>
+
+  <div class="drawer-backdrop" id="backdrop"></div>
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <button type="button" class="close" id="closeDrawer">Close</button>
+    <h2 id="drawerName"></h2>
+    <p class="role" id="drawerTitle"></p>
+    <dl id="drawerMeta"></dl>
+  </aside>
+
+  <script>
+    const SAMPLE = {
+      account: {
+        name: "Northbridge Mutual",
+        industry: "P&C Insurance",
+        segment: "Mid-market",
+        arrOpportunity: "$420K",
+        stage: "Technical Evaluation"
+      },
+      functions: [
+        { id: "executive", label: "Executive", critical: true },
+        { id: "underwriting", label: "Underwriting", critical: true },
+        { id: "claims", label: "Claims", critical: false },
+        { id: "it-security", label: "IT / Security", critical: true },
+        { id: "procurement", label: "Procurement", critical: true },
+        { id: "finance", label: "Finance", critical: false },
+        { id: "legal", label: "Legal / Compliance", critical: false }
+      ],
+      authorities: [
+        { id: "decide", label: "Decide", blurb: "Final yes / no. Can commit budget or kill the deal." },
+        { id: "shape", label: "Shape", blurb: "Sets criteria and owns the evaluation path." },
+        { id: "evaluate", label: "Evaluate", blurb: "Runs diligence, pilots, and technical review." },
+        { id: "inform", label: "Inform", blurb: "Needs updates; low direct decision weight." }
+      ],
+      contacts: [
+        { id: "c1", name: "Elena Vasquez", title: "Chief Underwriting Officer", function: "underwriting", authority: "decide", power: "high", preference: "champion", relationship: "strong", access: "direct" },
+        { id: "c2", name: "Marcus Chen", title: "VP, Claims Operations", function: "claims", authority: "shape", power: "medium", preference: "neutral", relationship: "warm", access: "direct" },
+        { id: "c3", name: "Priya Nair", title: "Director, Information Security", function: "it-security", authority: "shape", power: "high", preference: "skeptical", relationship: "thin", access: "indirect" },
+        { id: "c4", name: "Jonah Blake", title: "Security Architect", function: "it-security", authority: "evaluate", power: "medium", preference: "champion", relationship: "strong", access: "direct" },
+        { id: "c5", name: "Alicia Romero", title: "Procurement Manager", function: "procurement", authority: "evaluate", power: "medium", preference: "neutral", relationship: "warm", access: "direct" },
+        { id: "c6", name: "Sam Okonkwo", title: "Controller", function: "finance", authority: "inform", power: "low", preference: "neutral", relationship: "unknown", access: "none" },
+        { id: "c7", name: "Hannah Price", title: "Associate General Counsel", function: "legal", authority: "evaluate", power: "medium", preference: "skeptical", relationship: "thin", access: "indirect" },
+        { id: "c8", name: "David Kim", title: "SVP, Underwriting Strategy", function: "underwriting", authority: "shape", power: "high", preference: "champion", relationship: "strong", access: "direct" },
+        { id: "c9", name: "Rita Alvarez", title: "Claims Analyst Lead", function: "claims", authority: "evaluate", power: "low", preference: "champion", relationship: "warm", access: "direct" },
+        { id: "c10", name: "Owen Hart", title: "CEO", function: "executive", authority: "decide", power: "high", preference: "neutral", relationship: "thin", access: "none" },
+        { id: "c11", name: "Maya Singh", title: "IT Project Manager", function: "it-security", authority: "inform", power: "low", preference: "champion", relationship: "warm", access: "direct" },
+        { id: "c12", name: "Chris Foley", title: "VP, Finance", function: "finance", authority: "shape", power: "high", preference: "neutral", relationship: "unknown", access: "indirect" }
+      ]
+    };
+
+    let state = structuredClone(SAMPLE);
+    let dragId = null;
+
+    const board = document.getElementById("board");
+    const gapStrip = document.getElementById("gapStrip");
+    const powerFilter = document.getElementById("powerFilter");
+    const prefFilter = document.getElementById("prefFilter");
+    const drawer = document.getElementById("drawer");
+    const backdrop = document.getElementById("backdrop");
+
+    function initAccount() {
+      document.getElementById("accountName").textContent = state.account.name;
+      document.getElementById("accountMeta").textContent =
+        `${state.account.industry} · ${state.account.segment} · ${state.account.arrOpportunity} · ${state.account.stage}`;
+      board.style.setProperty("--cols", state.functions.length);
+    }
+
+    function passesFilters(c) {
+      const p = powerFilter.value;
+      const pref = prefFilter.value;
+      if (p !== "all" && c.power !== p) return false;
+      if (pref !== "all" && c.preference !== pref) return false;
+      return true;
+    }
+
+    function findGaps() {
+      const gaps = [];
+      for (const fn of state.functions.filter((f) => f.critical)) {
+        for (const auth of ["decide", "shape"]) {
+          const hit = state.contacts.some((c) => c.function === fn.id && c.authority === auth);
+          if (!hit) gaps.push({ functionId: fn.id, functionLabel: fn.label, authority: auth });
+        }
+      }
+      return gaps;
+    }
+
+    function renderGaps() {
+      const gaps = findGaps();
+      gapStrip.innerHTML = "";
+      if (!gaps.length) {
+        const ok = document.createElement("div");
+        ok.className = "gap-chip ok-chip";
+        ok.textContent = "Critical Decide / Shape seats are covered";
+        gapStrip.appendChild(ok);
+        return;
+      }
+      for (const g of gaps) {
+        const chip = document.createElement("div");
+        chip.className = "gap-chip";
+        chip.textContent = `Gap · ${g.functionLabel} / ${g.authority}`;
+        gapStrip.appendChild(chip);
+      }
+    }
+
+    function cardHtml(c, index) {
+      return `
+        <article class="card" draggable="true" data-id="${c.id}" style="animation-delay:${index * 35}ms" tabindex="0" role="button" aria-label="${c.name}">
+          <h4>${c.name}</h4>
+          <p class="title">${c.title}</p>
+          <div class="signals">
+            <div class="signal"><span class="dot ${c.power}"></span>Power ${c.power}</div>
+            <div class="signal"><span class="dot ${c.preference}"></span>${c.preference}</div>
+            <div class="signal"><span class="dot ${c.relationship}"></span>${c.relationship}</div>
+            <div class="signal"><span class="dot ${c.access}"></span>${c.access}</div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderBoard() {
+      const gaps = findGaps();
+      const gapSet = new Set(gaps.map((g) => `${g.functionId}:${g.authority}`));
+      const counts = Object.fromEntries(state.functions.map((f) => [f.id, 0]));
+      for (const c of state.contacts) if (passesFilters(c)) counts[c.function] += 1;
+
+      let html = `<div class="corner">Authority ↓ · Function →</div>`;
+      for (const fn of state.functions) {
+        html += `<div class="col-head ${fn.critical ? "critical" : ""}"><h3>${fn.label}</h3><span class="count">${counts[fn.id]} people</span></div>`;
+      }
+
+      state.authorities.forEach((auth) => {
+        html += `<div class="lane-label"><strong>${auth.label}</strong><span>${auth.blurb}</span></div>`;
+        state.functions.forEach((fn) => {
+          const people = state.contacts.filter(
+            (c) => c.function === fn.id && c.authority === auth.id && passesFilters(c)
+          );
+          const isGap = gapSet.has(`${fn.id}:${auth.id}`);
+          html += `<div class="cell ${isGap ? "gap" : ""}" data-function="${fn.id}" data-authority="${auth.id}" data-dropzone="true">`;
+          if (!people.length) {
+            html += `<div class="empty-hint">${isGap ? "Coverage gap" : "Drop contact"}</div>`;
+          } else {
+            people.forEach((c, i) => { html += cardHtml(c, i); });
+          }
+          html += `</div>`;
+        });
+      });
+
+      board.innerHTML = html;
+      bindBoardEvents();
+      renderGaps();
+    }
+
+    function bindBoardEvents() {
+      board.querySelectorAll(".card").forEach((card) => {
+        card.addEventListener("dragstart", (e) => {
+          dragId = card.dataset.id;
+          card.classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData("text/plain", dragId);
+        });
+        card.addEventListener("dragend", () => {
+          card.classList.remove("dragging");
+          dragId = null;
+          board.querySelectorAll(".cell.drag-over").forEach((el) => el.classList.remove("drag-over"));
+        });
+        card.addEventListener("click", () => openDrawer(card.dataset.id));
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openDrawer(card.dataset.id);
+          }
+        });
+      });
+
+      board.querySelectorAll("[data-dropzone]").forEach((cell) => {
+        cell.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          cell.classList.add("drag-over");
+        });
+        cell.addEventListener("dragleave", () => cell.classList.remove("drag-over"));
+        cell.addEventListener("drop", (e) => {
+          e.preventDefault();
+          cell.classList.remove("drag-over");
+          const id = e.dataTransfer.getData("text/plain") || dragId;
+          const contact = state.contacts.find((c) => c.id === id);
+          if (!contact) return;
+          contact.function = cell.dataset.function;
+          contact.authority = cell.dataset.authority;
+          renderBoard();
+        });
+      });
+    }
+
+    function openDrawer(id) {
+      const c = state.contacts.find((x) => x.id === id);
+      if (!c) return;
+      const fn = state.functions.find((f) => f.id === c.function)?.label || c.function;
+      const auth = state.authorities.find((a) => a.id === c.authority)?.label || c.authority;
+      document.getElementById("drawerName").textContent = c.name;
+      document.getElementById("drawerTitle").textContent = c.title;
+      document.getElementById("drawerMeta").innerHTML = `
+        <dt>Function</dt><dd>${fn}</dd>
+        <dt>Authority</dt><dd>${auth}</dd>
+        <dt>Power</dt><dd>${c.power}</dd>
+        <dt>Preference</dt><dd>${c.preference}</dd>
+        <dt>Relationship</dt><dd>${c.relationship}</dd>
+        <dt>Access</dt><dd>${c.access}</dd>
+      `;
+      drawer.classList.add("open");
+      backdrop.classList.add("open");
+      drawer.setAttribute("aria-hidden", "false");
+    }
+
+    function closeDrawer() {
+      drawer.classList.remove("open");
+      backdrop.classList.remove("open");
+      drawer.setAttribute("aria-hidden", "true");
+    }
+
+    document.getElementById("closeDrawer").addEventListener("click", closeDrawer);
+    backdrop.addEventListener("click", closeDrawer);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
+    powerFilter.addEventListener("change", renderBoard);
+    prefFilter.addEventListener("change", renderBoard);
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      state = structuredClone(SAMPLE);
+      powerFilter.value = "all";
+      prefFilter.value = "all";
+      initAccount();
+      renderBoard();
+    });
+
+    initAccount();
+    renderBoard();
+  </script>
+</body>
+</html>
